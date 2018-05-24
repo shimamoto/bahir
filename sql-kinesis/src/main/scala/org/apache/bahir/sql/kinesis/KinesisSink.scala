@@ -24,10 +24,11 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.execution.streaming.Sink
 
 
-class KinesisSink(streamName: String,
-                  region: Regions,
-                  chunk: Int,
-                  endpoint: Option[String]) extends Sink with Logging {
+private[kinesis] class KinesisSink(
+    streamName: String,
+    region: Regions,
+    chunk: Int,
+    endpoint: Option[String]) extends Sink with Logging {
 
   @volatile private var latestBatchId = -1L
 

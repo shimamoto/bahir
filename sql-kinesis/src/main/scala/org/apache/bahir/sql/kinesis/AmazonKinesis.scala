@@ -40,7 +40,7 @@ private[kinesis] object AmazonKinesis {
 
   private val cache = collection.concurrent.TrieMap.empty[Regions, AWSKinesis]
 
-  private[kinesis] def apply(
+  def apply(
     streamName: String,
     region: Regions,
     chunk: Int,
@@ -59,6 +59,15 @@ private[kinesis] object AmazonKinesis {
       }.build()
     )
     new AmazonKinesis(client, streamName, math.min(chunk, recordsMaxCount))
+  }
+
+  // This is only used for test
+  def apply(region: Regions, client: AWSKinesis): AmazonKinesis = {
+    new AmazonKinesis(cache.getOrElseUpdate(region, client), "dummy", recordsMaxCount)
+  }
+  // This is only used for test
+  def clear(): Unit = {
+    cache.clear()
   }
 
 }

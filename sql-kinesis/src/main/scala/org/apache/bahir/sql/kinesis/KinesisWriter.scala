@@ -22,8 +22,14 @@ import com.amazonaws.regions.Regions
 import org.apache.spark.sql.execution.QueryExecution
 import org.apache.spark.sql.types.{BinaryType, StringType, StructType}
 
-
-object KinesisWriter {
+/**
+ * The [[KinesisWriter]] class is used to write data from a batch query
+ * or structured streaming query, given by a [[QueryExecution]], to Kinesis.
+ * The data is assumed to have a data column, and an optional partition key
+ * column. If the partition key column is missing, then a SHA-256 digest of
+ * data as a hex string will be added to the entry.
+ */
+private[kinesis] object KinesisWriter {
   val PARTITION_KEY_ATTRIBUTE_NAME = "partitionKey"
   val DATA_ATTRIBUTE_NAME = "data"
 
@@ -52,6 +58,7 @@ object KinesisWriter {
     queryExecution.toRdd.foreachPartition { iter =>
       val client = AmazonKinesis(streamName, region, chunk, endpoint = endpoint)
       client.putRecords(iter)
+      client.flush()
     }
   }
 

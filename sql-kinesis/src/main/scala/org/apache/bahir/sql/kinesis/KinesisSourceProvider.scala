@@ -30,7 +30,12 @@ import org.apache.spark.sql.sources.v2.writer.streaming.StreamWriter
 import org.apache.spark.sql.streaming.OutputMode
 import org.apache.spark.sql.types.StructType
 
-class KinesisSourceProvider extends DataSourceRegister
+/**
+ * This provider is designed such that it throws [[IllegalArgumentException]]
+ * when the Kinesis Dataset is created, so that it can catch
+ * missing options even before the query is started.
+ */
+private[kinesis] class KinesisSourceProvider extends DataSourceRegister
   with StreamSinkProvider
   with CreatableRelationProvider
   with StreamWriteSupport
